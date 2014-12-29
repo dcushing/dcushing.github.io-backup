@@ -1,0 +1,66 @@
+<!doctype html>
+
+<html ng-app>
+<head>
+    <title>JLearn</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js"></script>
+    <script src="js/jlearn.js"></script>
+    <script src="js/decks/hiragana.js"></script>
+    <script src="js/decks/katakana.js"></script>
+    <script src="js/decks/hangul.js"></script>
+    <script src="js/decks/capitals.js"></script>
+    <script src="js/decks/basic_french.js"></script>
+    <script src="js/decks/basic_english.js"></script>
+    <script src="js/decks/thai_alphabet.js"></script>
+
+    <link rel="stylesheet" href="css/main.css" type="text/css" charset="utf-8"/>
+</head>
+<body>
+    <a href="https://github.com/Youpinadi/jlearn"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png" alt="Fork me on GitHub"></a>
+
+    <iframe src="https://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fyoupinadi.github.com%2Fjlearn%2F&amp;send=false&amp;layout=standard&amp;width=450&amp;show_faces=true&amp;font&amp;colorscheme=dark&amp;action=like&amp;height=80" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:80px;" allowTransparency="true"></iframe>
+
+    <div ng-controller="CardCtrl" ng-cloak>
+        <h1>Learning <select ng-model="deck" ng-options="deck.name + ' (' + deck.cards.length + ' cards)' for deck in decks" ng-change="deckChanged()"></select><br/><b>Type your answer</b> or <b>press SPACE</b> to learn</h1>
+
+
+
+        <div id="cards_container" ng-class="cardContainerClass()">
+            <div class="card box panel flip">
+                <div class="front">
+                    <span ng-show="!frontCard.isImage">{{ frontCard.source }}</span>
+                    <img ng-show="frontCard.isImage" src="{{ frontCard.source }}"/>
+                </div>
+                <div class="back">
+                    <span ng-show="!backCard.isImage">{{ backCard.source }}</span>
+                    <img ng-show="backCard.isImage" src="{{ backCard.source }}"/>
+                </div>
+            </div>
+            <div class="card box {{inputClass}}">
+                <input id="input" type="text" maxlength="{{currentCard.target.length}}" ng-change="check()" ng-model="input"/>
+                <div id="hint" ng-show="hint!=''">Hint: <span ng-bind-html-unsafe="hint"></span></div>
+            </div>
+        </div>
+
+        <div class="answer box" ng-class="answer.status">
+            <span ng-show="answer.status == 'success'">You were right!</span>
+            <span ng-show="answer.status == 'error'">You were wrong!</span>
+            <span ng-show="answer.status == 'learn'">Learning mode:</span>
+            Answer for <b>{{answer.card.source}}</b> was: <b>{{answer.card.target}}</b>
+            <div class="consecutive" ng-show="consecutiveGoodAnswers > 3">{{consecutiveGoodAnswers}} good consecutive answers!</div>
+            <div ng-show="answer.status != 'success'">Time to type what you've just learnt!</div>
+        </div>
+        <div id="history" class="box">
+            <div id="overall_stats" class="box">Overall stats: {{ stats }}</div>
+
+            <div id="options" class="box">
+                <label ng-show="fuzzyEnabled">fuzzy match <input type="checkbox" ng-model="fuzzy"/></label>
+                <label>random order <input type="checkbox" ng-model="random"/></label>
+            </div>
+            <span ng-repeat="card in deck.cards" ng-class="getClass(card)" title="{{card.target}} ({{card.success}}/{{card.error}})">{{card.source}} {{ getStats(card) }}%</span>
+        </div>
+    </div>
+</body>
+</html>
