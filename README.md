@@ -1,3 +1,3 @@
 dcushing.github.io
 ==================
-A workd in progress
+A work in progress
